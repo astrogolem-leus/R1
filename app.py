@@ -53,7 +53,7 @@ if uploaded_file is not None:
             class_idx = np.argmax(prediction, axis=1)[0]
             st.success(f"Hasil Prediksi: {labels[class_idx]}")
         except Exception as e:
-            st.error("❌ Ukuran atau format gambar tidak sesuai dengan model klasifikasi.")
+            st.error("❌ Ukuran atau format gambar tidak sesuai, ubah ukuran ke 224, 224.")
             # jangan raise lagi -> hilangkan traceback bawaan Streamlit
             st.stop()
 
