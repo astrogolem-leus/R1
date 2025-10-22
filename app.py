@@ -37,9 +37,7 @@ if uploaded_file is not None:
         st.image(result_img, caption="Hasil Deteksi", use_container_width=True)
 
     elif menu == "Klasifikasi Gambar":
-    from tensorflow.keras.preprocessing import image
-    import numpy as np
-
+    
     # Pastikan gambar RGB
     img = img.convert("RGB")
 
