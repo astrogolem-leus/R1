@@ -37,11 +37,28 @@ if uploaded_file is not None:
         st.image(result_img, caption="Hasil Deteksi", use_container_width=True)
 
     elif menu == "Klasifikasi Gambar":
-        # Preprocessing
-        img_resized = img.resize((224, 224))  # sesuaikan ukuran dengan model kamu
-        img_array = image.img_to_array(img_resized)
-        img_array = np.expand_dims(img_array, axis=0)
-        img_array = img_array / 255.0
+    from tensorflow.keras.preprocessing import image
+    import numpy as np
+
+    # Pastikan gambar RGB
+    img = img.convert("RGB")
+
+    # Sesuaikan ukuran dengan model
+    target_size = (224, 224)  # ubah kalau input model beda
+    img_resized = img.resize(target_size)
+
+    # Ubah ke array & normalisasi
+    img_array = image.img_to_array(img_resized)
+    img_array = np.expand_dims(img_array, axis=0)
+    img_array = img_array / 255.0
+
+    try:
+        prediction = classifier.predict(img_array)
+        class_idx = np.argmax(prediction, axis=1)[0]
+        st.success(f"Hasil Prediksi: {labels[class_idx]}")
+    except ValueError:
+        st.error("❌ Ukuran atau format gambar tidak sesuai dengan model klasifikasi.")
+
 
         # Prediksi
         prediction = classifier.predict(img_array)
