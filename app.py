@@ -4,6 +4,7 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image
+from PIL import ImageOps
 import cv2
 
 # ==========================
@@ -47,15 +48,23 @@ if uploaded_file is not None:
         img_array = image.img_to_array(img_resized)
         img_array = np.expand_dims(img_array, axis=0)
         img_array = img_array / 255.0
-
+        
         try:
+            input_shape = classifier.input_shape
+            target_size = (input_shape[1] or 224, input_shape[2] or 224)
+            img_resized = ImageOps.pad(img.convert("RGB"), target_size, color=(0,0,0))
+
+            img_array = image.img_to_array(img_resized)
+            img_array = np.expand_dims(img_array, axis=0)
+            img_array = img_array / 255.0
+
             prediction = classifier.predict(img_array)
             class_idx = np.argmax(prediction, axis=1)[0]
             st.success(f"Hasil Prediksi: {labels[class_idx]}")
-        except Exception as e:
-            st.error("❌ Ukuran atau format gambar tidak sesuai, ubah ukuran ke 224, 224.")
-            # jangan raise lagi -> hilangkan traceback bawaan Streamlit
+        except Exception:
+            st.error("❌ Gambar tidak bisa diproses untuk model ini.")
             st.stop()
+
 
 
 
