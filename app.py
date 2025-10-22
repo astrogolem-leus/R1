@@ -38,32 +38,31 @@ if uploaded_file is not None:
         st.image(result_img, caption="Hasil Deteksi", use_container_width=True)
 
     elif menu == "Klasifikasi Gambar":
-        # Pastikan gambar RGB
-        img = img.convert("RGB")
-        # Sesuaikan ukuran dengan model
-        target_size = (224, 224)  # ubah kalau input model beda
-        img_resized = img.resize(target_size)
-
-        # Ubah ke array & normalisasi
-        img_array = image.img_to_array(img_resized)
-        img_array = np.expand_dims(img_array, axis=0)
-        img_array = img_array / 255.0
-        
         try:
+            # Ambil input shape model
             input_shape = classifier.input_shape
             target_size = (input_shape[1] or 224, input_shape[2] or 224)
-            img_resized = ImageOps.pad(img.convert("RGB"), target_size, color=(0,0,0))
 
+            # Pastikan gambar dalam format RGB
+            img = img.convert("RGB")
+
+            # Resize otomatis dengan padding agar proporsi tetap
+            img_resized = ImageOps.pad(img, target_size, color=(0, 0, 0))
+
+            # Ubah ke array dan normalisasi
             img_array = image.img_to_array(img_resized)
             img_array = np.expand_dims(img_array, axis=0)
             img_array = img_array / 255.0
 
+            # Prediksi
             prediction = classifier.predict(img_array)
             class_idx = np.argmax(prediction, axis=1)[0]
             st.success(f"Hasil Prediksi: {labels[class_idx]}")
-        except Exception:
+
+        except Exception as e:
             st.error("❌ Gambar tidak bisa diproses untuk model ini.")
             st.stop()
+
 
 
 
