@@ -1,20 +1,22 @@
 import os
+import sys
+import types
 
-# ====== Atasi error OpenCV & GUI di Streamlit Cloud ======
-os.environ["QT_QPA_PLATFORM"] = "offscreen"  # cegah GUI error
-os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"  # cegah error backend video
-os.environ["DISPLAY"] = ":0"  # cegah X11 error di cloud
+# ====== Cegah error GUI di Streamlit Cloud ======
+os.environ["QT_QPA_PLATFORM"] = "offscreen"
+os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"
+os.environ["DISPLAY"] = ":0"
 
-# ====== Proteksi cv2 agar ultralytics tidak error di Streamlit Cloud ======
+# ====== Buat dummy cv2 lebih dulu, SEBELUM import ultralytics ======
 try:
     import cv2
+    # Uji apakah setNumThreads ada, kalau tidak, tambahkan dummy
+    if not hasattr(cv2, "setNumThreads"):
+        cv2.setNumThreads = lambda *a, **kw: None
 except Exception as e:
-    import types, sys
-
     def dummy_func(*args, **kwargs):
         return None
 
-    # Dummy cv2 lengkap agar ultralytics tidak crash
     cv2 = types.SimpleNamespace(
         imshow=dummy_func,
         imread=dummy_func,
@@ -28,13 +30,12 @@ except Exception as e:
         IMREAD_UNCHANGED=-1,
         __version__="0.0"
     )
-
     sys.modules["cv2"] = cv2
-    print("⚠️ OpenCV tidak aktif, menggunakan dummy cv2:", e)
+    print("⚠️ OpenCV dummy aktif karena error:", e)
 
-# ====== Import utama ======
-import streamlit as st
+# ====== Setelah ini baru aman import ultralytics ======
 from ultralytics import YOLO
+import streamlit as st
 import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 import numpy as np
