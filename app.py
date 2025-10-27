@@ -1,7 +1,9 @@
 import os
-os.environ["QT_QPA_PLATFORM"] = "offscreen"
-os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"
-os.environ["DISPLAY"] = ":0"
+
+# ====== Atasi error OpenCV & GUI di Streamlit Cloud ======
+os.environ["QT_QPA_PLATFORM"] = "offscreen"  # cegah GUI error
+os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"  # cegah error backend video
+os.environ["DISPLAY"] = ":0"  # cegah X11 error di cloud
 
 # ====== Proteksi cv2 agar ultralytics tidak error ======
 try:
@@ -18,12 +20,14 @@ except Exception as e:
         imwrite=dummy_func,
         destroyAllWindows=dummy_func,
         waitKey=dummy_func,
+        IMREAD_COLOR=1,
+        IMREAD_GRAYSCALE=0,
+        IMREAD_UNCHANGED=-1,
         __version__="0.0"
     )
 
     sys.modules["cv2"] = cv2
     print("⚠️ OpenCV tidak aktif, menggunakan dummy cv2:", e)
-
 
 # ====== Import utama ======
 import streamlit as st
