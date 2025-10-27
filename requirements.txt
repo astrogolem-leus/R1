@@ -4,3 +4,4 @@ opencv-python-headless
 tensorflow
 numpy
 pillow
+python_version == "3.10"
