@@ -1,14 +1,14 @@
 import os
 os.environ["QT_QPA_PLATFORM"] = "offscreen"  # cegah error GUI di Streamlit Cloud
+os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"  # cegah konflik video backend
 
 import streamlit as st
 from ultralytics import YOLO
 import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 import numpy as np
-from PIL import Image
-from PIL import ImageOps
-import cv2
+from PIL import Image, ImageOps
+
 
 # ==========================
 # Load Models
