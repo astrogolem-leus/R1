@@ -1,14 +1,25 @@
 import os
-os.environ["QT_QPA_PLATFORM"] = "offscreen"  # cegah error GUI di Streamlit Cloud
-os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"  # cegah konflik video backend
 
+# ====== Atasi error OpenCV & GUI di Streamlit Cloud ======
+os.environ["QT_QPA_PLATFORM"] = "offscreen"  # cegah error GUI
+os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"  # cegah error video backend
+os.environ["DISPLAY"] = ":0"  # cegah X11 error di cloud
+
+# ====== Proteksi cv2 agar ultralytics tidak error ======
+try:
+    import cv2
+except Exception as e:
+    import types, sys
+    sys.modules['cv2'] = types.SimpleNamespace()
+    print("⚠️ OpenCV gagal dimuat, diganti dummy modul:", e)
+
+# ====== Import utama ======
 import streamlit as st
 from ultralytics import YOLO
 import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 import numpy as np
 from PIL import Image, ImageOps
-
 
 # ==========================
 # Load Models
@@ -60,18 +71,13 @@ if uploaded_file is not None:
             # Prediksi
             prediction = classifier.predict(img_array)
             class_idx = np.argmax(prediction, axis=1)[0]
+
+            # Label (ubah sesuai dataset kamu)
+            labels = ["Kelas 1", "Kelas 2", "Kelas 3"]
             st.success(f"Hasil Prediksi: {labels[class_idx]}")
 
+            st.write("Probabilitas:", np.max(prediction))
+
         except Exception as e:
-            st.error("❌ Gambar tidak bisa diproses untuk model ini.")
+            st.error(f"❌ Terjadi error saat klasifikasi: {e}")
             st.stop()
-
-
-
-
-
-        # Prediksi
-        prediction = classifier.predict(img_array)
-        class_index = np.argmax(prediction)
-        st.write("### Hasil Prediksi:", class_index)
-        st.write("Probabilitas:", np.max(prediction))
