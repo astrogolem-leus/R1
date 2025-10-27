@@ -5,7 +5,7 @@ os.environ["QT_QPA_PLATFORM"] = "offscreen"  # cegah GUI error
 os.environ["OPENCV_VIDEOIO_PRIORITY_MSMF"] = "0"  # cegah error backend video
 os.environ["DISPLAY"] = ":0"  # cegah X11 error di cloud
 
-# ====== Proteksi cv2 agar ultralytics tidak error ======
+# ====== Proteksi cv2 agar ultralytics tidak error di Streamlit Cloud ======
 try:
     import cv2
 except Exception as e:
@@ -14,12 +14,15 @@ except Exception as e:
     def dummy_func(*args, **kwargs):
         return None
 
+    # Dummy cv2 lengkap agar ultralytics tidak crash
     cv2 = types.SimpleNamespace(
         imshow=dummy_func,
         imread=dummy_func,
         imwrite=dummy_func,
         destroyAllWindows=dummy_func,
         waitKey=dummy_func,
+        setNumThreads=dummy_func,
+        getBuildInformation=dummy_func,
         IMREAD_COLOR=1,
         IMREAD_GRAYSCALE=0,
         IMREAD_UNCHANGED=-1,
