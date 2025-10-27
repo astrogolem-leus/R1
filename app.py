@@ -1,3 +1,6 @@
+import os
+os.environ["QT_QPA_PLATFORM"] = "offscreen"  # cegah error GUI di Streamlit Cloud
+
 import streamlit as st
 from ultralytics import YOLO
 import tensorflow as tf
